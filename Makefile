@@ -19,7 +19,7 @@ INC_DIR = include/
 PUSH_SWAP_SRC_DIR = push_swap/
 SHARED_SRC_DIR = shared/
 
-SRCS = push_swap.c
+SRCS = push_swap.c		ps_quicksort.c
 SRCS_P = $(addprefix $(PUSH_SWAP_SRC_DIR), $(SRCS))
 OBJS = $(SRCS_P:.c=.o)
 OBJS_P = $(addprefix $(OBJ_DIR), $(OBJS))
@@ -32,7 +32,7 @@ SHARED_OBJS = $(SHARED_SRCS_P:.c=.o)
 SHARED_OBJS_P = $(addprefix $(OBJ_DIR), $(SHARED_OBJS))
 
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -g
+CFLAGS = -Wall -Werror -Wextra -g -fsanitize=address
 
 LIBFT = ./libft/
 LIBFT_LIB = $(addprefix $(LIBFT), libft.a)
@@ -50,7 +50,7 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.c $(LIBFT)include/libft.h $(INC_DIR)push_swap.h $(INC
 
 $(NAME): $(LIBFT_LIB) $(OBJS_P) $(SHARED_OBJS_P)
 	@echo "Compiling main executable"
-	@$(CC) $(OBJS_P) $(SHARED_OBJS_P) $(LIBFT_LIB) -o $(NAME)
+	@$(CC) $(CFLAGS) $(OBJS_P) $(SHARED_OBJS_P) $(LIBFT_LIB) -o $(NAME)
 
 clean:
 	@rm -rf $(OBJ_DIR)

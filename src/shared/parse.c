@@ -49,7 +49,8 @@ static bool	contains_no_duplicates(const int32_t *arr, uint32_t size)
 bool	parse_args(t_stack *stack, char **argv)
 {
 	uint32_t	i;
-	
+
+	stack->top = (int32_t) stack->size - 1;
 	i = stack->size;
 	while (i-- > 0)
 		if (!read_number(*(argv++), stack->arr + i))

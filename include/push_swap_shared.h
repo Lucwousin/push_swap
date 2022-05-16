@@ -22,4 +22,7 @@ void	push(t_stack *from, t_stack *to);
 void	rotate(t_stack *stack);
 void	rotate_rev(t_stack *stack);
 
+int32_t	get_i(t_stack *stack, int32_t i);
+int32_t	get_top(t_stack *stack);
+
 #endif

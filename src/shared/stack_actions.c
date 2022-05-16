@@ -1,5 +1,15 @@
 #include "push_swap_shared.h"
 
+int32_t	get_i(t_stack *stack, int32_t i)
+{
+	return (stack->arr[i]);
+}
+
+int32_t	get_top(t_stack *stack)
+{
+	return (get_i(stack, stack->top));
+}
+
 void	swap(t_stack *stack)
 {
 	int32_t	tmp;

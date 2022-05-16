@@ -9,7 +9,7 @@ t_stack	*create_stack(uint32_t size)
 	if (stack == NULL)
 		return (NULL);
 	stack->size = size;
-	stack->top = (int32_t) size - 1;
+	stack->top = -1;
 	stack->arr = malloc(size * sizeof(int32_t));
 	if (stack->arr != NULL)
 		return (stack);

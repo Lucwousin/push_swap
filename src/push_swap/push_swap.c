@@ -1,6 +1,7 @@
 #include <unistd.h>
+#include <stdio.h>
+#include "libft.h"
 #include "push_swap.h"
-#include "push_swap_shared.h"
 
 static void	error(void)
 {
@@ -20,6 +21,7 @@ void	sort(t_stack *a)
 		return ;
 	if (a->size <= 5)
 		return (sort_small(a));
+	return (ps_quicksort(a));
 }
 
 int	main(int argc, char **argv)
@@ -37,5 +39,7 @@ int	main(int argc, char **argv)
 		error();
 	}
 	sort(stack);
+	for (int i = stack->top; i >= 0; i--)
+		printf("%d\n", get_i(stack, i));
 	delete_stack(stack);
 }
