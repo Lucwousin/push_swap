@@ -19,7 +19,7 @@ INC_DIR = include/
 PUSH_SWAP_SRC_DIR = push_swap/
 SHARED_SRC_DIR = shared/
 
-SRCS = push_swap.c		ps_quicksort.c
+SRCS = action.c		push_swap.c		ps_quicksort.c
 SRCS_P = $(addprefix $(PUSH_SWAP_SRC_DIR), $(SRCS))
 OBJS = $(SRCS_P:.c=.o)
 OBJS_P = $(addprefix $(OBJ_DIR), $(OBJS))
