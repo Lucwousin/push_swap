@@ -12,7 +12,7 @@ static void	error(void)
 void	sort_small(t_stack *a)
 {
 	if (a->size == 2)
-		return (ft_putendl_fd("sa", STDOUT_FILENO));
+		return (run_action(SA, a, NULL));
 }
 
 void	sort(t_stack *a)
@@ -39,7 +39,5 @@ int	main(int argc, char **argv)
 		error();
 	}
 	sort(stack);
-	for (int i = stack->top; i >= 0; i--)
-		printf("%d\n", get_i(stack, i));
 	delete_stack(stack);
 }

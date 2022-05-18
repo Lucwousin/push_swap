@@ -2,9 +2,9 @@
 #include "ft_printf.h"
 
 static const char	*g_actions[11] = {
-	"SA", "SB", "SS",
-	"PA", "PB", "RA", "RB",
-	"RR", "RRA", "RRB", "RRR"};
+	"sa", "sb", "ss",
+	"pa", "pb", "ra", "rb",
+	"rr", "rra", "rrb", "rrr"};
 
 void	run_action(t_action action, t_stack *a, t_stack *b)
 {
@@ -13,9 +13,9 @@ void	run_action(t_action action, t_stack *a, t_stack *b)
 	if (action == SB || action == SS)
 		swap(b);
 	if (action == PA)
-		push(a, b);
-	if (action == PB)
 		push(b, a);
+	if (action == PB)
+		push(a, b);
 	if (action == RA || action == RR)
 		rotate(a);
 	if (action == RB || action == RR)
