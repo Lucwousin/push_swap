@@ -1,13 +1,12 @@
-#include "push_swap_shared.h"
+#include "push_swap.h"
 
 void	do_rotate(t_stack *a, t_stack *b)
 {
 	if (b->top >= 1 && get_i(b, 0) > get_top(b))
 	{
-		rotate(a);
-		rotate(b);
+		run_action(RR, a, b);
 	}
-	else rotate(a);
+	else run_action(RA, a, b);
 }
 
 int32_t	get_sorted_idx(t_stack *b)
@@ -24,39 +23,28 @@ int32_t	get_sorted_idx(t_stack *b)
 	return (idx - 1);
 }
 
-void	do_quicksort(t_stack *a, t_stack *b, uint16_t median, uint32_t size)
+void	do_quicksort(t_stack *a, t_stack *b, int32_t median, uint32_t size, bool less_than)
 {
-	int32_t	pushed = 0;
-	uint32_t	i = 0;
-	if (size <= 1)
+	uint32_t	i;
+	
+	if (size == 1)
 		return;
-	while (i < size)
+	i = 0;
+	while (i++ < size)
 	{
-		if (get_top(a) <= median) {
-			push(a, b);
-			++pushed;
-		} else
-			do_rotate(a, b);
-		i++;
+		if (less_than) {
+			if (get_top(a) < median)
+				run_action(PB, a, b);
+			else
+				do_rotate(a, b);
+		}
+		else if (get_top(b) >= median)
+			run_action(PA, a, b);
+		else
+			run_action(RB, a, b);
 	}
-	//int32_t sorted = get_sorted_idx(b);
-	while (b->top != -1)
-		push(b, a);
-	//	++pushed_back;
-	//}
-	//if (a->top == 0) {
-	//	while (b->top >= 0)
-	//		push(b, a);
-	//	return;
-	//}
-	if (median == 1)
-		do_quicksort(a, b, 0, pushed);
-	else if (median != 0)
-		do_quicksort(a, b, (median + 1) / 2, pushed);
-	while (a->arr[a->top] <= median)
-		rotate(a);
-	if (median > 1)
-		do_quicksort(a, b, median * 3 / 2, size - pushed);
+	do_quicksort(a, b, median / 2, size / 2, false);
+	do_quicksort(a, b, median / 2, size / 2, true);
 }
 
 void	ps_quicksort(t_stack *a)
@@ -64,6 +52,6 @@ void	ps_quicksort(t_stack *a)
 	t_stack *b = create_stack(a->size);
 	if (!b) // TODO: change
 		return ;
-	do_quicksort(a, b, (a->size + 1) / 2, a->size);
+	do_quicksort(a, b, (int32_t) a->size / 2, a->size, true);
 	delete_stack(b);
 }
