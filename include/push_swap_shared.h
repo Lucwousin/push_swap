@@ -8,6 +8,8 @@ typedef struct s_stack
 	int32_t		*arr;
 	int32_t		top;
 	uint32_t	size;
+	int32_t		*partitions;
+	int32_t		p_idx;
 }	t_stack;
 
 t_stack	*create_stack(uint32_t size);

@@ -4,6 +4,7 @@
 t_stack	*create_stack(uint32_t size)
 {
 	t_stack	*stack;
+//	int32_t	p_count;
 	
 	stack = ft_calloc(1, sizeof(t_stack));
 	if (stack == NULL)
@@ -11,10 +12,20 @@ t_stack	*create_stack(uint32_t size)
 	stack->size = size;
 	stack->top = -1;
 	stack->arr = malloc(size * sizeof(int32_t));
-	if (stack->arr != NULL)
-		return (stack);
-	free(stack);
-	return (NULL);
+	if (stack->arr == NULL)
+	{
+		free(stack);
+		return (NULL);
+	}
+//	p_count = ft_max(1, (int32_t) size / 5);
+	stack->partitions = malloc(size * sizeof(int32_t));
+	if (stack->partitions == NULL)
+	{
+		delete_stack(stack);
+		return (NULL);
+	}
+	stack->p_idx = -1;
+	return (stack);
 }
 
 void	delete_stack(t_stack *stack)
