@@ -69,3 +69,15 @@ bool	is_sorted(t_stack *stack)
 	}
 	return (true);
 }
+
+int32_t	get_partition(t_stack *stack)
+{
+	if (stack->p_idx == -1)
+		return (-1);
+	return (stack->partitions[stack->p_idx]);
+}
+
+void	partition(t_stack *stack, int32_t i)
+{
+	stack->partitions[++stack->p_idx] = i;
+}

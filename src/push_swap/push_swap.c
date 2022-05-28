@@ -9,33 +9,33 @@ void	error(void)
 	exit(EXIT_FAILURE);
 }
 
-void	sort_small(t_stack *a, t_action_list *list)
+void	sort_small(t_stack *a, t_ins_lst *list)
 {
 	if (a->size == 2)
 		return (run_action(SA, a, NULL, list));
 }
 
-void	sort_three(t_stack *a, t_action_list *list)
+void	sort_three(t_stack *a, t_ins_lst *list)
 {
-	if (get_top(a) == 0)
+	if (a->arr[a->top] == 0)
 	{
 		run_action(RRA, a, NULL, list);
 		run_action(SA, a, NULL, list);
 	}
-	else if (get_top(a) == 1 && get_i(a, 1) == 0)
+	else if (a->arr[a->top] == 1 && a->arr[1] == 0)
 		run_action(SA, a, NULL, list);
-	else if (get_top(a) == 1)
+	else if (a->arr[a->top] == 1)
 		run_action(RRA, a, NULL, list);
-	else if (get_top(a) == 2 && get_i(a, 1) == 0)
+	else if (a->arr[a->top] == 2 && a->arr[1] == 0)
 		run_action(RA, a, NULL, list);
-	else if (get_top(a) == 2)
+	else if (a->arr[a->top] == 2)
 	{
 		run_action(SA, a, NULL, list);
 		run_action(RRA, a, NULL, list);
 	}
 }
 
-void	sort(t_stack *a, t_action_list *list)
+void	sort(t_stack *a, t_ins_lst *list)
 {
 	if (is_sorted(a))
 		return ;
@@ -49,11 +49,11 @@ void	sort(t_stack *a, t_action_list *list)
 int	main(int argc, char **argv)
 {
 	t_stack			*stack;
-	t_action_list	action_list;
+	t_ins_lst	action_list;
 
 	if (argc <= 2)
 		exit(EXIT_SUCCESS);
-	ft_bzero(&action_list, sizeof(t_action_list));
+	ft_bzero(&action_list, sizeof(t_ins_lst));
 	stack = create_stack(argc - 1);
 	if (stack == NULL)
 		exit(EXIT_FAILURE);

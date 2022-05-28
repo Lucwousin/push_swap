@@ -16,6 +16,8 @@ t_stack	*create_stack(uint32_t size);
 void	delete_stack(t_stack *stack);
 bool	index_stack(t_stack *stack);
 bool	is_sorted(t_stack *stack);
+int32_t	get_partition(t_stack *stack);
+void	partition(t_stack *stack, int32_t i);
 
 bool	parse_args(t_stack *stack, char **argv);
 

@@ -9,11 +9,11 @@ static const char	*g_actions[11] = {
 	"pa", "pb", "ra", "rb",
 	"rr", "rra", "rrb", "rrr"};
 
-bool	add_action(t_action_list *list, t_action action)
+bool	add_action(t_ins_lst *list, t_action action)
 {
-	t_action_list	*lst_obj;
+	t_ins_lst	*lst_obj;
 	
-	lst_obj = malloc(sizeof(t_action_list));
+	lst_obj = malloc(sizeof(t_ins_lst));
 	if (!lst_obj)
 		return (false);
 	lst_obj->action = action;
@@ -33,9 +33,9 @@ bool	add_action(t_action_list *list, t_action action)
 	return (true);
 }
 
-void	clear(t_action_list *list)
+void	clear(t_ins_lst *list)
 {
-	t_action_list	*cur;
+	t_ins_lst	*cur;
 
 	cur = list->next;
 	while (cur && cur != list)
@@ -45,7 +45,7 @@ void	clear(t_action_list *list)
 	}
 }
 
-void	run_action(t_action action, t_stack *a, t_stack *b, t_action_list *list)
+void	run_action(t_action action, t_stack *a, t_stack *b, t_ins_lst *list)
 {
 	if (action == SA || action == SS)
 		swap(a);
@@ -72,7 +72,7 @@ void	run_action(t_action action, t_stack *a, t_stack *b, t_action_list *list)
 	}
 }
 
-bool	remove_list_item(t_action_list *obj)
+bool	remove_list_item(t_ins_lst *obj)
 {
 	obj->prev->next = obj->next;
 	obj->next->prev = obj->prev;
@@ -80,17 +80,17 @@ bool	remove_list_item(t_action_list *obj)
 	return (true);
 }
 
-bool	modify_and_unlink(t_action_list *cur, t_action_list *nxt, t_action action)
+bool	modify_and_unlink(t_ins_lst *cur, t_ins_lst *nxt, t_action action)
 {
 	cur->action = action;
 	return (remove_list_item(nxt));
 }
 
-void	combine_list(t_action_list *list)
+void	combine_list(t_ins_lst *list)
 {
 	bool			changed;
-	t_action_list	*cur;
-	t_action_list	*nxt;
+	t_ins_lst	*cur;
+	t_ins_lst	*nxt;
 
 	changed = true;
 	while (changed)
@@ -138,7 +138,7 @@ bool	is_swap(t_action action)
 	return (action == SA || action == SB || action == SS);
 }
 
-t_action_list	*handle_rotation(t_action_list *list, t_action_list *cur)
+t_ins_lst	*handle_rotation(t_ins_lst *list, t_ins_lst *cur)
 {
 	int32_t	rot_delta[2];
 
@@ -196,9 +196,9 @@ t_action_list	*handle_rotation(t_action_list *list, t_action_list *cur)
 	return (cur);
 }
 
-t_action_list	*handle_push_swap(t_action_list *list, t_action_list *cur)
+t_ins_lst	*handle_push_swap(t_ins_lst *list, t_ins_lst *cur)
 {
-	t_action_list	*next;
+	t_ins_lst	*next;
 	
 	next = cur->next;
 	if (next != list && ((cur->action == SA && next->action == SB) || (next->action == SA && cur->action == SB)))
@@ -213,9 +213,9 @@ t_action_list	*handle_push_swap(t_action_list *list, t_action_list *cur)
 	return (next->next);
 }
 
-void	print_list(t_action_list *list)
+void	print_list(t_ins_lst *list)
 {
-	t_action_list	*cur;
+	t_ins_lst	*cur;
 
 	if (list->next == NULL)
 		return ;

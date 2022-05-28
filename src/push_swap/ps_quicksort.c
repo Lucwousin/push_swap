@@ -21,7 +21,7 @@
  * could not handle my beautiful code. (No, it's a bug)
  * https://github.com/42School/norminette/issues/319
  */
-static void	do_swap(t_stack *a, t_stack *b, t_stack_name n, t_action_list *list)
+static void	do_swap(t_stack *a, t_stack *b, t_stack_name n, t_ins_lst *list)
 {
 	bool	swap[2];
 
@@ -39,98 +39,6 @@ static void	do_swap(t_stack *a, t_stack *b, t_stack_name n, t_action_list *list)
 		run_action(SA, a, b, list);
 	else if (swap[B])
 		run_action(SB, a, b, list);
-}
-
-/**
- * Find the median of the last partition
- */
-int32_t	find_median(t_stack *s)
-{
-	int32_t	count;
-	int32_t	value;
-	int32_t	limits[2];
-	
-	count = s->top + 1;
-	if (s->p_idx != -1)
-		count -= (s->partitions[s->p_idx] + 1);
-	limits[0] = INT32_MAX;
-	limits[1] = INT32_MIN;
-	while (count--)
-	{
-		value = s->arr[s->top - count];
-		limits[0] = ft_min(limits[0], value);
-		limits[1] = ft_max(limits[1], value);
-	}
-	return ((limits[0] + limits[1]) / 2);
-}
-
-void	rewind_a(t_stack *a, int32_t rotated, t_action_list *list)
-{
-	t_action	action;
-	int32_t		count;
-	
-	if (rotated < a->partitions[a->p_idx])
-		action = RRA;
-	else
-		action = RA;
-	if (action == RRA)
-		count = rotated;
-	else
-		count = a->partitions[a->p_idx] + 1;
-	while (count--)
-		run_action(action, a, NULL, list);
-}
-
-void	rewind_b(t_stack *b, int32_t rotated, t_action_list *list)
-{
-	t_action	action;
-	int32_t		count;
-
-	if (rotated < b->partitions[b->p_idx])
-		action = RRB;
-	else
-		action = RB;
-	if (action == RRB)
-		count = rotated;
-	else
-		count = b->partitions[b->p_idx] - b->top;
-	while (count--)
-		run_action(action, NULL, b, list);
-}
-
-bool	split_a(t_stack *a, t_stack *b, t_action_list *list)
-{
-	int32_t	count;
-	int32_t	median;
-	int32_t	rotated;
-
-	count = a->top + 1;
-	if (a->p_idx != -1)
-		count -= (a->partitions[a->p_idx] + 1);
-	if (count == 2)
-	{
-		do_swap(a, b, A, list);
-		return (false);
-	}
-	if (count <= 1)
-		return (false);
-	if (b->top != -1)
-		b->partitions[++b->p_idx] = b->top;
-	median = find_median(a);
-	rotated = 0;
-	while (count--)
-	{
-		if (a->arr[a->top] <= median)
-		{
-			run_action(PB, a, b, list);
-			continue ;
-		}
-		run_action(RA, a, b, list);
-		rotated++;
-	}
-	if (a->p_idx != -1)
-		rewind_a(a, rotated, list);
-	return (true);
 }
 
 void	find_minmax(t_stack *stack, int32_t limits[2][2], int32_t count, int32_t rotation)
@@ -175,18 +83,18 @@ void	find_minmax(t_stack *stack, int32_t limits[2][2], int32_t count, int32_t ro
 	}
 }
 
-t_cost	find_cheapest(t_stack *stack, int32_t limits[2][2])
+t_cost	find_cheapest(t_stack_name n, t_stack *stack, int32_t limits[2][2])
 {
 	t_cost	costs[2];
 
 	if (limits[0][1] < stack->top / 2)
-		costs[0] = (t_cost){-(limits[0][1] + 1), true};
+		costs[0] = (t_cost){-(limits[0][1] + 1), n == B};
 	else
-		costs[0] = (t_cost){stack->top - limits[0][1], true};
+		costs[0] = (t_cost){stack->top - limits[0][1], n == B};
 	if (limits[1][1] < stack->top / 2)
-		costs[1] = (t_cost){-(limits[1][1] + 1), false};
+		costs[1] = (t_cost){-(limits[1][1] + 1), n != B};
 	else
-		costs[1] = (t_cost){stack->top - limits[1][1], false};
+		costs[1] = (t_cost){stack->top - limits[1][1], n != B};
 
 	if (abs(costs[0].count) + 2 < abs(costs[1].count) + 1)
 		return (costs[0]);
@@ -194,92 +102,79 @@ t_cost	find_cheapest(t_stack *stack, int32_t limits[2][2])
 		return (costs[1]);
 }
 
-void	do_rotate(t_stack *a, t_stack *b, int32_t rots[2], t_action_list *list)
+bool	selection_sort(t_stack_name n, t_stack *s[2], t_ins_lst *list, int32_t count, t_cmp cmp)
 {
-	while (rots[0])
-		if (rots[0] > 0)
-		{
-			run_action(RA, a, b, list);
-			--rots[0];
-		}
-		else
-		{
-			run_action(RRA, a, b, list);
-			++rots[0];
-		}
-	while (rots[1])
-		if (rots[1] > 0)
-		{
-			run_action(RB, a, b, list);
-			--rots[1];
-		}
-		else
-		{
-			run_action(RRB, a, b, list);
-			++rots[1];
-		}
-}
+	int32_t			limits[2][2];
+	t_stack_name	other;
+	int32_t			rotation;
+	t_cost			plan;
 
-void	select_sort(t_stack *a, t_stack *b, t_action_list *list, int32_t count)
-{
-	int32_t	limits[2][2];
-	int32_t	rotation;
-	t_cost	plan;
-
+	other = (n + 1) % END_SN;
 	rotation = 0;
 	while (count--)
 	{
-		find_minmax(b, limits, count, rotation);
-		plan = find_cheapest(b, limits);
-		do_rotate(a, b, (int32_t[]){0, plan.count}, list);
-		run_action(PA, a, b, list);
+		find_minmax(s[n], limits, count, rotation);
+		plan = find_cheapest(n, s[n], limits);
+		do_rotate_n(n, s[n], plan.count, list);
+		do_push(n, s[A], s[B], list);
 		if (plan.smaller)
-			run_action(RA, a, b, list);
+			do_rotate(other, s[other], false, list);
 		rotation += plan.count;
 	}
-	while (a->arr[0] < a->arr[a->top])
-		run_action(RRA, a, b, list);
-	if (b->p_idx != -1)
-		--b->p_idx;
+	while (!compare(s[other]->arr[0], get_top(s[other]), cmp))
+		do_rotate(other, s[other], true, list);
+	if (n == B && s[B]->p_idx != -1)
+		--s[B]->p_idx;
+	return (false);
 }
+//40 24 7 48 3 16 23 12 18 27 20 43 10 35 2 39 29 19 45 41 44 30 21 42 25 14 49 37 4 15 26 9 34 28 13 1 33 5 32 11 22 8 31 46 17 47 50 6 36 38
 
-void	split_b(t_stack *a, t_stack *b, t_action_list *list) {
+typedef struct s_split_info {
 	int32_t	count;
 	int32_t	median;
-	int32_t	rotated;
+}	t_splinf;
 
-	median = find_median(b);
-	count = b->top + 1;
-	if (b->p_idx != -1)
-		count -= (b->partitions[b->p_idx] + 1);
-	if (count == 2)
-	{
-		do_swap(a, b, B, list);
-		run_action(PA, a, b, list);
-		count = 1;
-	}
-	if (count == 1)
-	{
-		run_action(PA, a, b, list);
-		if (b->p_idx != -1)
-			--b->p_idx;
-		return ;
-	}
-	if (count <= 20)
-		return (select_sort(a, b, list, count));
+static void	rewind(t_stack_name n, t_stack *stack, int32_t rotated, t_ins_lst *list)
+{
+	int32_t	count;
+	bool	reversed;
+
+	reversed = rotated < get_partition(stack);
+	if (!reversed)
+		count = get_partition(stack) + 1;
+	else
+		count = rotated;
+	while (count--)
+		do_rotate(n, stack, reversed, list);
+}
+
+bool	split(t_stack_name n, t_stack **s, t_ins_lst *list, t_cmp cmp)
+{
+	t_splinf	info;
+	int32_t		rotated;
+
+	info.count = partition_size(s[n]);
+	if (info.count == 2)
+		do_swap(s[A], s[B], n, list);
+	if (info.count <= 2 && n == A)
+		return (false);
+	if (n == A && s[B]->top >= 0)
+		partition(s[B], s[B]->top);
+	if (info.count <= 20)
+		return (selection_sort(n, s, list, info.count, cmp));
+	info.median = find_median(s[n], info.count);
 	rotated = 0;
-	while (count-- && b->top >= 0)
-	{
-		if (b->arr[b->top] > median)
+	while (info.count--)
+		if (compare(get_top(s[n]), info.median, cmp))
+			do_push(n, s[A], s[B], list);
+		else
 		{
-			run_action(PA, a, b, list);
-			continue;
+			do_rotate(n, s[n], false, list);
+			++rotated;
 		}
-		run_action(RB, a, b, list);
-		++rotated;
-	}
-	if (b->p_idx != -1)
-		rewind_b(b, rotated, list);
+	if (s[n]->p_idx != -1)
+		rewind(n, s[n], rotated, list);
+	return (true);
 }
 
 /**
@@ -301,27 +196,30 @@ static void	update_sorted_partition(t_stack *s)
 	}
 	if (idx == 0)
 		return ;
-	s->partitions[++s->p_idx] = idx - 1;
+	s->partitions[0] = idx - 1;
+	s->p_idx = 0;
 }
 
-void	ps_quicksort(t_stack *a, t_action_list *list)
+void	ps_quicksort(t_stack *a, t_ins_lst *list)
 {
 	bool	a_is_sorted;
-	t_stack	*b;
+	t_stack	*s[2];
 
-	b = create_stack(a->size);
-	if (!b) // TODO: change
+	s[A] = a;
+	s[B] = create_stack(a->size);
+	if (!s[B]) // TODO: change
 		return ;
 	while (true)
 	{
-		update_sorted_partition(a);
-		a_is_sorted = a->p_idx != -1 && a->partitions[a->p_idx] == a->top;
-		if (a_is_sorted && b->top == -1)
+		update_sorted_partition(s[A]);
+		a_is_sorted = s[A]->p_idx != -1 && get_partition(s[A]) == s[A]->top;
+		if (a_is_sorted && s[B]->top == -1)
 			break ;
 		if (!a_is_sorted)
-			while (split_a(a, b, list))
-				update_sorted_partition(a);
-		split_b(a, b, list);
+			while (split(A, s, list, LE)) {
+				update_sorted_partition(s[A]);
+			}
+		split(B, s, list, GT);
 	}
-	delete_stack(b);
+	delete_stack(s[B]);
 }
