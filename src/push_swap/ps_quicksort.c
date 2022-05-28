@@ -110,7 +110,7 @@ bool	split_a(t_stack *a, t_stack *b, t_action_list *list)
 	return (true);
 }
 
-void	find_minmax(t_stack *stack, int32_t limits[2][2])
+void	find_minmax(t_stack *stack, int32_t limits[2][2], int32_t count, int32_t rotation)
 {
 	int32_t	i;
 	int32_t	bottom;
@@ -119,10 +119,8 @@ void	find_minmax(t_stack *stack, int32_t limits[2][2])
 	limits[0][0] = INT32_MAX;
 	limits[1][0] = INT32_MIN;
 	i = stack->top;
-	bottom = -1;
-	if (stack->p_idx != -1)
-		bottom = stack->partitions[stack->p_idx];
-	while (i > bottom)
+	bottom = ft_max(0, i - count + rotation);
+	while (i >= bottom)
 	{
 		value = get_i(stack, i);
 		if (value < limits[0][0])
@@ -137,41 +135,86 @@ void	find_minmax(t_stack *stack, int32_t limits[2][2])
 		}
 		--i;
 	}
+	rotation = ft_min(stack->top + 1, rotation);
+	while (rotation-- > 0)
+	{
+		value = get_i(stack, rotation);
+		if (value < limits[0][0])
+		{
+			limits[0][0] = value;
+			limits[0][1] = rotation;
+		}
+		if (value > limits[1][0])
+		{
+			limits[1][0] = value;
+			limits[1][1] = rotation;
+		}
+	}
 }
 
 t_cost	find_cheapest(t_stack *stack, int32_t limits[2][2])
 {
-	int32_t	costs[2];
+	t_cost	costs[2];
 
-	costs[0] = stack->top - limits[0][1];
-	costs[1] = stack->top - limits[1][1];
-	if (costs[0] * 2 + 3 < costs[1] * 2 + 1)
-		return ((t_cost){costs[0], true});
+	if (limits[0][1] < stack->top / 2)
+		costs[0] = (t_cost){-(limits[0][1] + 1), true};
 	else
-		return ((t_cost){costs[1], false});
+		costs[0] = (t_cost){stack->top - limits[0][1], true};
+	if (limits[1][1] < stack->top / 2)
+		costs[1] = (t_cost){-(limits[1][1] + 1), false};
+	else
+		costs[1] = (t_cost){stack->top - limits[1][1], false};
+
+	if (abs(costs[0].count) + 2 < abs(costs[1].count) + 1)
+		return (costs[0]);
+	else
+		return (costs[1]);
+}
+
+void	do_rotate(t_stack *a, t_stack *b, int32_t rots[2], t_action_list *list)
+{
+	while (rots[0])
+		if (rots[0] > 0)
+		{
+			run_action(RA, a, b, list);
+			--rots[0];
+		}
+		else
+		{
+			run_action(RRA, a, b, list);
+			++rots[0];
+		}
+	while (rots[1])
+		if (rots[1] > 0)
+		{
+			run_action(RB, a, b, list);
+			--rots[1];
+		}
+		else
+		{
+			run_action(RRB, a, b, list);
+			++rots[1];
+		}
 }
 
 void	select_sort(t_stack *a, t_stack *b, t_action_list *list, int32_t count)
 {
 	int32_t	limits[2][2];
-	int32_t	rewind;
+	int32_t	rotation;
 	t_cost	plan;
 
+	rotation = 0;
 	while (count--)
 	{
-		find_minmax(b, limits);
+		find_minmax(b, limits, count, rotation);
 		plan = find_cheapest(b, limits);
-		rewind = plan.count;
-		while (plan.count--)
-			run_action(RB, a, b, list);
+		do_rotate(a, b, (int32_t[]){0, plan.count}, list);
 		run_action(PA, a, b, list);
 		if (plan.smaller)
 			run_action(RA, a, b, list);
-		if (b->p_idx != -1)
-			while (rewind--)
-				run_action(RRB, a, b, list);
+		rotation += plan.count;
 	}
-	while (get_i(a, 0) < get_i(a, 1))
+	while (get_i(a, 0) < get_top(a))
 		run_action(RRA, a, b, list);
 	if (b->p_idx != -1)
 		--b->p_idx;
@@ -186,8 +229,6 @@ void	split_b(t_stack *a, t_stack *b, t_action_list *list) {
 	count = b->top + 1;
 	if (b->p_idx != -1)
 		count -= (b->partitions[b->p_idx] + 1);
-	if (count <= 20)
-		return (select_sort(a, b, list, count));
 	if (count == 2)
 	{
 		do_swap(a, b, B, list);
@@ -199,7 +240,10 @@ void	split_b(t_stack *a, t_stack *b, t_action_list *list) {
 		run_action(PA, a, b, list);
 		if (b->p_idx != -1)
 			--b->p_idx;
+		return ;
 	}
+	if (count <= 20)
+		return (select_sort(a, b, list, count));
 	rotated = 0;
 	while (count-- && b->top >= 0)
 	{
@@ -255,7 +299,7 @@ void	print_stacks(t_stack *a, t_stack *b, const char *msg)
 	}
 	while (j >= 0)
 	{
-		ft_printf("--- | %2d\n", get_i(b, j));
+		ft_printf("--- | %3d\n", get_i(b, j));
 		--j;
 	}
 }
@@ -278,10 +322,10 @@ void	ps_quicksort(t_stack *a, t_action_list *list)
 			while (split_a(a, b, list))
 			{
 				update_a_p(a);
-				//print_stacks(a, b, "Split a");
+	//			print_stacks(a, b, "Split a");
 			}
 		split_b(a, b, list);
-		//print_stacks(a, b, "Split b");
+	//	print_stacks(a, b, "Split b");
 	}
 	delete_stack(b);
 }

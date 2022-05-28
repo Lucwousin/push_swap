@@ -31,6 +31,7 @@ t_stack	*create_stack(uint32_t size)
 void	delete_stack(t_stack *stack)
 {
 	free(stack->arr);
+	free(stack->partitions);
 	free(stack);
 }
 
