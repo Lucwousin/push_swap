@@ -1,13 +1,36 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   ps_quicksort.c                                     :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lsinke <lsinke@student.codam.nl>             +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2022/05/28 19:32:15 by lsinke        #+#    #+#                 */
+/*   Updated: 2022/05/28 19:32:15 by lsinke        ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "push_swap.h"
 #include "libft.h"
-#include "ft_printf.h"
 
-void	do_swap(t_stack *a, t_stack *b, t_stack_name n, t_action_list *list)
+/**
+ * Check if the top 2 values of stack n should be swapped.
+ * If yes, check if swapping other stack's values also improves performance
+ *
+ * The swap[n] assignments are spread out over multiple lines because the norm
+ * could not handle my beautiful code. (No, it's a bug)
+ * https://github.com/42School/norminette/issues/319
+ */
+static void	do_swap(t_stack *a, t_stack *b, t_stack_name n, t_action_list *list)
 {
 	bool	swap[2];
 
-	swap[A] = a->top > 0 && get_top(a) > get_i(a, a->top - 1);
-	swap[B] = b->top > 0 && get_top(b) < get_i(b, b->top - 1);
+	swap[A] = false;
+	swap[B] = false;
+	if (a->top > 0)
+		swap[A] = a->arr[a->top] > a->arr[a->top - 1];
+	if (b->top > 0)
+		swap[B] = b->arr[b->top] < b->arr[b->top - 1];
 	if (!swap[n])
 		return ;
 	if (swap[A] && swap[B])
@@ -34,7 +57,7 @@ int32_t	find_median(t_stack *s)
 	limits[1] = INT32_MIN;
 	while (count--)
 	{
-		value = get_i(s, s->top - count);
+		value = s->arr[s->top - count];
 		limits[0] = ft_min(limits[0], value);
 		limits[1] = ft_max(limits[1], value);
 	}
@@ -97,7 +120,7 @@ bool	split_a(t_stack *a, t_stack *b, t_action_list *list)
 	rotated = 0;
 	while (count--)
 	{
-		if (get_top(a) <= median)
+		if (a->arr[a->top] <= median)
 		{
 			run_action(PB, a, b, list);
 			continue ;
@@ -122,7 +145,7 @@ void	find_minmax(t_stack *stack, int32_t limits[2][2], int32_t count, int32_t ro
 	bottom = ft_max(0, i - count + rotation);
 	while (i >= bottom)
 	{
-		value = get_i(stack, i);
+		value = stack->arr[i];
 		if (value < limits[0][0])
 		{
 			limits[0][0] = value;
@@ -138,7 +161,7 @@ void	find_minmax(t_stack *stack, int32_t limits[2][2], int32_t count, int32_t ro
 	rotation = ft_min(stack->top + 1, rotation);
 	while (rotation-- > 0)
 	{
-		value = get_i(stack, rotation);
+		value = stack->arr[rotation];
 		if (value < limits[0][0])
 		{
 			limits[0][0] = value;
@@ -214,7 +237,7 @@ void	select_sort(t_stack *a, t_stack *b, t_action_list *list, int32_t count)
 			run_action(RA, a, b, list);
 		rotation += plan.count;
 	}
-	while (get_i(a, 0) < get_top(a))
+	while (a->arr[0] < a->arr[a->top])
 		run_action(RRA, a, b, list);
 	if (b->p_idx != -1)
 		--b->p_idx;
@@ -247,7 +270,7 @@ void	split_b(t_stack *a, t_stack *b, t_action_list *list) {
 	rotated = 0;
 	while (count-- && b->top >= 0)
 	{
-		if (get_top(b) > median)
+		if (b->arr[b->top] > median)
 		{
 			run_action(PA, a, b, list);
 			continue;
@@ -259,49 +282,26 @@ void	split_b(t_stack *a, t_stack *b, t_action_list *list) {
 		rewind_b(b, rotated, list);
 }
 
-void	update_a_p(t_stack *s)
+/**
+ * Update the partitions in stack A
+ *
+ * partitions[p_idx] will contain the index to the last sorted number on stack.
+ * If p_idx is -1, nothing is sorted.
+ */
+static void	update_sorted_partition(t_stack *s)
 {
-	int32_t	highest;
 	int32_t	idx;
 
 	if (s->top == -1)
 		return ;
-	highest = INT32_MIN;
-	idx = -1;
-	while (idx++ < s->top)
-		highest = ft_max(highest, get_i(s, idx));
 	idx = -1;
 	while (idx++ < s->top) {
-		if (get_i(s, idx) != highest - idx)
-			break;
+		if (s->arr[idx] != ((int32_t) s->size - 1) - idx)
+			break ;
 	}
-	s->partitions[0] = idx - 1;
-	if (s->partitions[0] == -1)
-		s->p_idx = -1;
-	else
-		s->p_idx = 0;
-}
-
-void	print_stacks(t_stack *a, t_stack *b, const char *msg)
-{
-	ft_printf("\n%s\n", msg);
-	int i = a->top, j = b->top;
-	while (i >= 0 && j >= 0)
-	{
-		ft_printf("%3d | %3d\n", get_i(a, i), get_i(b, j));
-		--i;
-		--j;
-	}
-	while (i >= 0)
-	{
-		ft_printf("%3d | ---\n", get_i(a, i));
-		--i;
-	}
-	while (j >= 0)
-	{
-		ft_printf("--- | %3d\n", get_i(b, j));
-		--j;
-	}
+	if (idx == 0)
+		return ;
+	s->partitions[++s->p_idx] = idx - 1;
 }
 
 void	ps_quicksort(t_stack *a, t_action_list *list)
@@ -314,18 +314,14 @@ void	ps_quicksort(t_stack *a, t_action_list *list)
 		return ;
 	while (true)
 	{
-		a_is_sorted = is_sorted(a);
+		update_sorted_partition(a);
+		a_is_sorted = a->p_idx != -1 && a->partitions[a->p_idx] == a->top;
 		if (a_is_sorted && b->top == -1)
 			break ;
-		update_a_p(a);
 		if (!a_is_sorted)
 			while (split_a(a, b, list))
-			{
-				update_a_p(a);
-	//			print_stacks(a, b, "Split a");
-			}
+				update_sorted_partition(a);
 		split_b(a, b, list);
-	//	print_stacks(a, b, "Split b");
 	}
 	delete_stack(b);
 }
