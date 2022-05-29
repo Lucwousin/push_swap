@@ -1,5 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   push_swap.c                                        :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lsinke <lsinke@student.codam.nl>             +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2022/05/29 17:11:30 by lsinke        #+#    #+#                 */
+/*   Updated: 2022/05/29 17:11:30 by lsinke        ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <unistd.h>
-#include <stdio.h>
 #include "libft.h"
 #include "push_swap.h"
 
@@ -7,12 +18,6 @@ void	error(void)
 {
 	ft_putendl_fd("Error", STDERR_FILENO);
 	exit(EXIT_FAILURE);
-}
-
-void	sort_small(t_stack *a, t_ins_lst *list)
-{
-	if (a->size == 2)
-		return (run_action(SA, a, NULL, list));
 }
 
 void	sort_three(t_stack *a, t_ins_lst *list)
@@ -48,7 +53,7 @@ void	sort(t_stack *a, t_ins_lst *list)
 
 int	main(int argc, char **argv)
 {
-	t_stack			*stack;
+	t_stack		*stack;
 	t_ins_lst	action_list;
 
 	if (argc <= 2)
