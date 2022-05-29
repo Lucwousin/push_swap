@@ -56,8 +56,10 @@ void	error(void);
 void	run_action(t_action action, t_stack *a, t_stack *b, t_ins_lst *list);
 
 void	ps_quicksort(t_stack *a, t_ins_lst *action_list);
-
 int32_t	find_median(t_stack *stack, int32_t count);
+
+bool	selection_sort(t_stack *s[2], t_ins_lst *list, int32_t count, t_cmp cmp);
+
 int32_t	find_closest(t_stack *stack, int32_t count, int32_t median, t_cmp cmp);
 int32_t	partition_size(t_stack *stack);
 

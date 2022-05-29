@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "push_swap.h"
-#include "libft.h"
 
 /**
  * Check if the top 2 values of stack n should be swapped.
@@ -41,91 +40,6 @@ static void	do_swap(t_stack *a, t_stack *b, t_stack_name n, t_ins_lst *list)
 		run_action(SB, a, b, list);
 }
 
-void	find_minmax(t_stack *stack, int32_t limits[2][2], int32_t count, int32_t rotation)
-{
-	int32_t	i;
-	int32_t	bottom;
-	int32_t	value;
-
-	limits[0][0] = INT32_MAX;
-	limits[1][0] = INT32_MIN;
-	i = stack->top;
-	bottom = ft_max(0, i - count + rotation);
-	while (i >= bottom)
-	{
-		value = stack->arr[i];
-		if (value < limits[0][0])
-		{
-			limits[0][0] = value;
-			limits[0][1] = i;
-		}
-		if (value > limits[1][0])
-		{
-			limits[1][0] = value;
-			limits[1][1] = i;
-		}
-		--i;
-	}
-	rotation = ft_min(stack->top + 1, rotation);
-	while (rotation-- > 0)
-	{
-		value = stack->arr[rotation];
-		if (value < limits[0][0])
-		{
-			limits[0][0] = value;
-			limits[0][1] = rotation;
-		}
-		if (value > limits[1][0])
-		{
-			limits[1][0] = value;
-			limits[1][1] = rotation;
-		}
-	}
-}
-
-t_cost	find_cheapest(t_stack *stack, int32_t limits[2][2])
-{
-	t_cost	costs[2];
-
-	if (limits[0][1] < stack->top / 2)
-		costs[0] = (t_cost){-(limits[0][1] + 1), true};
-	else
-		costs[0] = (t_cost){stack->top - limits[0][1], true};
-	if (limits[1][1] < stack->top / 2)
-		costs[1] = (t_cost){-(limits[1][1] + 1), false};
-	else
-		costs[1] = (t_cost){stack->top - limits[1][1], false};
-
-	if (abs(costs[0].count) + 2 < abs(costs[1].count) + 1)
-		return (costs[0]);
-	else
-		return (costs[1]);
-}
-
-bool	selection_sort(t_stack *s[2], t_ins_lst *list, int32_t count, t_cmp cmp)
-{
-	int32_t			limits[2][2];
-	int32_t			rotation;
-	t_cost			plan;
-
-	rotation = 0;
-	while (count--)
-	{
-		find_minmax(s[B], limits, count, rotation);
-		plan = find_cheapest(s[B], limits);
-		do_rotate_n(B, s[B], plan.count, list);
-		do_push(B, s[A], s[B], list);
-		if (plan.smaller)
-			do_rotate(A, s[A], false, list);
-		rotation += plan.count;
-	}
-	while (!compare(s[A]->arr[0], get_top(s[A]), cmp))
-		do_rotate(A, s[A], true, list);
-	if (s[B]->p_idx != -1)
-		--s[B]->p_idx;
-	return (false);
-}
-
 /**
  * After splitting from one stack to another, all the values we did not push
  * will be on the bottom of the stack. If we had partitions in the stack we
@@ -134,7 +48,11 @@ bool	selection_sort(t_stack *s[2], t_ins_lst *list, int32_t count, t_cmp cmp)
  * the values we have on the bottom, rotating forwards costs less moves than
  * reversed.
  */
-static void	rewind(t_stack_name n, t_stack *stack, int32_t rotated, t_ins_lst *list)
+static void	rewind(
+		t_stack_name n,
+		t_stack *stack,
+		int32_t rotated,
+		t_ins_lst *list)
 {
 	int32_t	count;
 	bool	reversed;
@@ -153,6 +71,9 @@ static void	rewind(t_stack_name n, t_stack *stack, int32_t rotated, t_ins_lst *l
  * Cmp will be <= for n == A, > for n == B
  * If we're splitting from stack B to stack A and there's 20 or less values in
  * the top partition, use selection sort to directly sort all the values.
+ *
+ * I know those indentations for the if/else are wrong, but norminette
+ * disagrees with that.
  */
 static bool	split(t_stack_name n, t_stack **s, t_ins_lst *list, t_cmp cmp)
 {
@@ -172,7 +93,7 @@ static bool	split(t_stack_name n, t_stack **s, t_ins_lst *list, t_cmp cmp)
 	while (info.count--)
 		if (compare(get_top(s[n]), info.median, cmp))
 			do_push(n, s[A], s[B], list);
-		else
+		else // TODO: Stop norminette complaining
 		{
 			do_rotate(n, s[n], false, list);
 			++info.rotated;
@@ -195,10 +116,9 @@ static void	update_sorted_partition(t_stack *s)
 	if (s->top == -1)
 		return ;
 	idx = -1;
-	while (idx++ < s->top) {
+	while (idx++ < s->top)
 		if (s->arr[idx] != ((int32_t) s->size - 1) - idx)
 			break ;
-	}
 	if (idx == 0)
 		return ;
 	s->partitions[0] = idx - 1;
@@ -228,7 +148,7 @@ void	ps_quicksort(t_stack *a, t_ins_lst *list)
 	while (true)
 	{
 		update_sorted_partition(s[A]);
-		a_is_sorted = s[A]->p_idx != -1 && get_partition(s[A]) == s[A]->top;
+		a_is_sorted = get_partition(s[A]) == s[A]->top;
 		if (a_is_sorted && s[B]->top == -1)
 			break ;
 		if (!a_is_sorted)
