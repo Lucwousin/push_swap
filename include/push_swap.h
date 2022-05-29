@@ -41,6 +41,16 @@ struct s_action_list
 	t_ins_lst	*prev;
 };
 
+/**
+ * Local variables for the quicksort split function.
+ * Thanks norminette.
+ */
+typedef struct s_split_info {
+	int32_t	count;
+	int32_t	median;
+	int32_t	rotated;
+}	t_splinf;
+
 void	error(void);
 
 void	run_action(t_action action, t_stack *a, t_stack *b, t_ins_lst *list);
