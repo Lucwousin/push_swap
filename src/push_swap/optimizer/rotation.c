@@ -74,10 +74,18 @@ void	replace_list(t_ins_lst *after, t_ins_lst *before, t_ins_lst *with)
 	tmp_list.next->prev = &tmp_list;
 	tmp_list.prev->next = &tmp_list;
 	clear(&tmp_list);
-	after->next = with->next;
-	after->next->prev = after;
-	before->prev = with->prev;
-	before->prev->next = before;
+	if (with->next)
+	{
+		after->next = with->next;
+		after->next->prev = after;
+		before->prev = with->prev;
+		before->prev->next = before;
+	}
+	else
+	{
+		after->next = before;
+		before->prev = after;
+	}
 }
 
 t_ins_lst	*clean_rotation(t_ins_lst *list, t_ins_lst *cur)
