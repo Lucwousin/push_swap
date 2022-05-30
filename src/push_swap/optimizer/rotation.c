@@ -17,20 +17,14 @@ static const t_action	g_rotates[2][2] = {
 [true] = {[A] = RRA, [B] = RRB}
 };
 
-bool	is_rotation(t_action action)
-{
-	return (action == RA || action == RB || action == RR
-		|| action == RRA || action == RRB || action == RRR);
-}
-
-t_ins_lst	*get_rotation_deltas(
+static t_ins_lst	*get_rotation_deltas(
 	int32_t rot_delta[2],
 	t_ins_lst *list,
 	t_ins_lst *cur)
 {
 	rot_delta[A] = 0;
 	rot_delta[B] = 0;
-	while (cur != list && is_rotation(cur->action))
+	while (cur != list && get_info(cur->action).type == ROTATE)
 	{
 		if (cur->action == RA || cur->action == RR)
 			++rot_delta[A];
@@ -45,7 +39,7 @@ t_ins_lst	*get_rotation_deltas(
 	return (cur);
 }
 
-void	create_new_rotation(int32_t rot_delta[2], t_ins_lst *new_list)
+static void	create_new_rotation(int32_t rot_delta[2], t_ins_lst *new_list)
 {
 	while (rot_delta[A] || rot_delta[B])
 	{
@@ -62,31 +56,40 @@ void	create_new_rotation(int32_t rot_delta[2], t_ins_lst *new_list)
 		}
 		if (rot_delta[A] < 0)
 			rot_delta[A]++;
-		else
+		else if (rot_delta[A] > 0)
 			rot_delta[A]--;
 		if (rot_delta[B] < 0)
 			rot_delta[B]++;
-		else
+		else if (rot_delta[B] > 0)
 			rot_delta[B]--;
 	}
+}
+
+void	replace_list(t_ins_lst *after, t_ins_lst *before, t_ins_lst *with)
+{
+	t_ins_lst	tmp_list;
+
+	tmp_list.next = after->next;
+	tmp_list.prev = before->prev;
+	tmp_list.next->prev = &tmp_list;
+	tmp_list.prev->next = &tmp_list;
+	clear(&tmp_list);
+	after->next = with->next;
+	after->next->prev = after;
+	before->prev = with->prev;
+	before->prev->next = before;
 }
 
 t_ins_lst	*clean_rotation(t_ins_lst *list, t_ins_lst *cur)
 {
 	t_ins_lst	new_list;
-	t_ins_lst	tmp_list;
 	t_ins_lst	*next;
 	int32_t		rot_delta[2];
 
+	new_list.next = 0;
+	new_list.prev = 0;
 	next = get_rotation_deltas(rot_delta, list, cur);
 	create_new_rotation(rot_delta, &new_list);
-	tmp_list.next = cur;
-	tmp_list.prev = next->prev;
-	cur->prev->next = new_list.next;
-	new_list.next->prev = cur->prev;
-	next->prev = new_list.prev;
-	next->prev->next = next;
-	tmp_list.prev->next = &tmp_list;
-	clear(&tmp_list);
+	replace_list(cur->prev, next, &new_list);
 	return (next);
 }

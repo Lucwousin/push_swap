@@ -13,8 +13,20 @@ typedef enum e_action {
 	RR,
 	RRA,
 	RRB,
-	RRR
+	RRR,
+	NO_ACTION
 }	t_action;
+
+typedef enum e_action_type {
+	SWAP,
+	ROTATE,
+	PUSH
+}	t_a_type;
+
+typedef struct s_a_info {
+	const char	*str;
+	t_a_type	type;
+}	t_a_info;
 
 typedef enum e_stack_name {
 	A,
@@ -60,18 +72,20 @@ int32_t	find_median(t_stack *stack, int32_t count);
 
 bool	selection_sort(t_stack *s[2], t_ins_lst *list, int32_t count, t_cmp cmp);
 
-int32_t	find_closest(t_stack *stack, int32_t count, int32_t median, t_cmp cmp);
 int32_t	partition_size(t_stack *stack);
 
 void	do_push(t_stack_name from, t_stack *a, t_stack *b, t_ins_lst *list);
 void	do_rotate(t_stack_name name, t_stack *stack, bool rev, t_ins_lst *list);
 void	do_rotate_n(t_stack_name n, t_stack *stack, int32_t amt, t_ins_lst *list);
 
-t_ins_lst	*clean_rotation(t_ins_lst *list, t_ins_lst *cur);
 bool	add_action(t_ins_lst *list, t_action action);
 void	print_list(t_ins_lst *list);
-void	combine_list(t_ins_lst *list);
 void	clear(t_ins_lst *list);
+t_a_info	get_info(t_action action);
+
+void	optimize(t_ins_lst *list);
+t_ins_lst	*clean_rotation(t_ins_lst *list, t_ins_lst *cur);
+t_ins_lst	*combine_contradictions(t_ins_lst *list, t_ins_lst *cur);
 
 bool	compare(int32_t a, int32_t b, t_cmp cmp);
 

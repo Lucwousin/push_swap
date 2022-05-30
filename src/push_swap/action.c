@@ -4,10 +4,24 @@
 #include "libft.h"
 #include "ft_printf.h"
 
-static const char	*g_actions[11] = {
-	"sa", "sb", "ss",
-	"pa", "pb", "ra", "rb",
-	"rr", "rra", "rrb", "rrr"};
+static const t_a_info	g_actions[] = {
+		[SA] = {"sa", SWAP},
+		[SB] = {"sb", SWAP},
+		[SS] = {"ss", SWAP},
+		[PA] = {"pa", PUSH},
+		[PB] = {"pb", PUSH},
+		[RA] = {"ra", ROTATE},
+		[RB] = {"rb", ROTATE},
+		[RR] = {"rr", ROTATE},
+		[RRA] = {"rra", ROTATE},
+		[RRB] = {"rrb", ROTATE},
+		[RRR] = {"rrr", ROTATE},
+};
+
+t_a_info	get_info(t_action action)
+{
+	return (g_actions[action]);
+}
 
 bool	add_action(t_ins_lst *list, t_action action)
 {
@@ -70,163 +84,4 @@ void	run_action(t_action action, t_stack *a, t_stack *b, t_ins_lst *list)
 		clear(list);
 		error();
 	}
-}
-
-bool	remove_list_item(t_ins_lst *obj)
-{
-	obj->prev->next = obj->next;
-	obj->next->prev = obj->prev;
-	free(obj);
-	return (true);
-}
-
-bool	modify_and_unlink(t_ins_lst *cur, t_ins_lst *nxt, t_action action)
-{
-	cur->action = action;
-	return (remove_list_item(nxt));
-}
-
-void	combine_list(t_ins_lst *list)
-{
-	bool			changed;
-	t_ins_lst	*cur;
-	t_ins_lst	*nxt;
-
-	changed = true;
-	while (changed)
-	{
-		changed = false;
-		cur = list->next;
-		while (cur != list->prev)
-		{
-			nxt = cur->next;
-			if ((cur->action == RA && nxt->action == RB)
-				|| (cur->action == RB && nxt->action == RA))
-				changed |= modify_and_unlink(cur, nxt, RR);
-			else if ((cur->action == RRA && nxt->action == RRB)
-				|| (cur->action == RRB && nxt->action == RRA))
-				changed |= modify_and_unlink(cur, nxt, RRR);
-			else if ((cur->action == SA && nxt->action == SB)
-				|| (cur->action == SB && nxt->action == SA))
-				changed |= modify_and_unlink(cur, nxt, SS);
-			else if ((cur->action == RA && nxt->action == RRA)
-				|| (cur->action == RRA && nxt->action == RA)
-				|| (cur->action == RB && nxt->action == RRB)
-				|| (cur->action == RRB && nxt->action == RB)
-				|| (cur->action == RR && nxt->action == RRR)
-				|| (cur->action == RRR && nxt->action == RR)
-				|| (cur->action == PA && nxt->action == PB)
-				|| (cur->action == PB && nxt->action == PA))
-			{
-				cur = nxt->next;
-				changed |= remove_list_item(nxt->prev);
-				changed |= remove_list_item(nxt);
-				continue ;
-			}
-			cur = cur->next;
-		}
-	}
-}
-
-bool	is_push(t_action action)
-{
-	return (action == PA || action == PB);
-}
-
-bool	is_swap(t_action action)
-{
-	return (action == SA || action == SB || action == SS);
-}
-
-t_ins_lst	*handle_rotation(t_ins_lst *list, t_ins_lst *cur)
-{
-	int32_t	rot_delta[2];
-
-	rot_delta[A] = 0;
-	rot_delta[B] = 0;
-	while (cur != list && !is_push(cur->action) && !is_swap(cur->action))
-	{
-		if (cur->action == RA || cur->action == RR)
-			++rot_delta[A];
-		if (cur->action == RB || cur->action == RR)
-			++rot_delta[B];
-		if (cur->action == RRA || cur->action == RRR)
-			--rot_delta[A];
-		if (cur->action == RRB || cur->action == RRR)
-			--rot_delta[B];
-		cur = cur->next;
-	}
-	while (rot_delta[A] || rot_delta[B])
-	{
-		if (rot_delta[A] > 0 && rot_delta[B] > 0)
-		{
-			ft_printf("%s\n", g_actions[RR]);
-			--rot_delta[A];
-			--rot_delta[B];
-			continue ;
-		}
-		if (rot_delta[A] < 0 && rot_delta[B] < 0)
-		{
-			ft_printf("%s\n", g_actions[RRR]);
-			++rot_delta[A];
-			++rot_delta[B];
-			continue ;
-		}
-		if (rot_delta[A] > 0)
-		{
-			ft_printf("%s\n", g_actions[RA]);
-			--rot_delta[A];
-		}
-		if (rot_delta[B] > 0)
-		{
-			ft_printf("%s\n", g_actions[RB]);
-			--rot_delta[B];
-		}
-		if (rot_delta[A] < 0)
-		{
-			ft_printf("%s\n", g_actions[RRA]);
-			++rot_delta[A];
-		}
-		if (rot_delta[B] < 0)
-		{
-			ft_printf("%s\n", g_actions[RRB]);
-			++rot_delta[B];
-		}
-	}
-	return (cur);
-}
-
-t_ins_lst	*handle_push_swap(t_ins_lst *list, t_ins_lst *cur)
-{
-	t_ins_lst	*next;
-	
-	next = cur->next;
-	if (next != list && ((cur->action == SA && next->action == SB) || (next->action == SA && cur->action == SB)))
-		ft_printf("%s\n", g_actions[SS]);
-	else if (next == list || (!(cur->action == PA && next->action == PB) && !(next->action == PA && cur->action == PB)
-		&& !(cur->action == SS && next->action == SS) && !(cur->action == SA && next->action == SA) 
-		&& !(cur->action == SB && next->action == SB)))
-	{
-		ft_printf("%s\n", g_actions[cur->action]);
-		return (next);
-	}
-	return (next->next);
-}
-
-void	print_list(t_ins_lst *list)
-{
-	t_ins_lst	*cur;
-
-	if (list->next == NULL)
-		return ;
-	cur = list->next;
-	while (cur != list)
-	{
-		if (cur->action == RA || cur->action == RB || cur->action == RR
-			|| cur->action == RRA || cur->action == RRB || cur->action == RRR)
-			cur = handle_rotation(list, cur);
-		else
-			cur = handle_push_swap(list, cur);
-	}
-	clear(list);
 }

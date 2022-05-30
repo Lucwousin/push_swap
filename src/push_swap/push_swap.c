@@ -51,6 +51,18 @@ void	sort(t_stack *a, t_ins_lst *list)
 	return (ps_quicksort(a, list));
 }
 
+void	print_list(t_ins_lst *list)
+{
+	t_ins_lst	*cur;
+
+	cur = list->next;
+	while (cur != list)
+	{
+		ft_putendl_fd((char *) get_info(cur->action).str, STDOUT_FILENO);
+		cur = cur->next;
+	}
+}
+
 int	main(int argc, char **argv)
 {
 	t_stack		*stack;
@@ -68,7 +80,8 @@ int	main(int argc, char **argv)
 		error();
 	}
 	sort(stack, &action_list);
-	combine_list(&action_list);
+	optimize(&action_list);
 	print_list(&action_list);
+	clear(&action_list);
 	delete_stack(stack);
 }
