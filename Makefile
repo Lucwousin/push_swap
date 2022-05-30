@@ -19,7 +19,7 @@ INC_DIR = include/
 PUSH_SWAP_SRC_DIR = push_swap/
 SHARED_SRC_DIR = shared/
 
-SRCS = action.c		median.c	push_swap.c		ps_quicksort.c		selection_sort.c		utils.c\
+SRCS = action.c		median.c	push_swap.c		ps_quicksort.c		selection_sort.c		util/utils.c\
 	   optimizer/optimizer.c	optimizer/contradictions.c	optimizer/rotation.c\
 	   util/partition.c
 SRCS_P = $(addprefix $(PUSH_SWAP_SRC_DIR), $(SRCS))
