@@ -85,9 +85,9 @@ static bool	split(t_stack_name n, t_stack **s, t_ins_lst *list, t_cmp cmp)
 	if (info.count <= 2 && n == A)
 		return (false);
 	if (n == A && s[B]->top >= 0)
-		partition(s[B], s[B]->top);
-	if (info.count <= 20 && n == B)
-		return (selection_sort(s, list, info.count, cmp));
+		partition(s[B]);
+	if (info.count <= SEL_SORT_CUTOFF && n == B)
+		return (selection_sort(s, list, info.count));
 	info.median = find_median(s[n], info.count);
 	info.rotated = 0;
 	while (info.count--)
@@ -142,7 +142,7 @@ void	ps_quicksort(t_stack *a, t_ins_lst *list)
 	t_stack	*s[2];
 
 	s[A] = a;
-	s[B] = create_stack(a->size);
+	s[B] = create_stack(a->size, calculate_needed_partitions(a->size));
 	if (!s[B]) // TODO: change
 		return ;
 	while (true)

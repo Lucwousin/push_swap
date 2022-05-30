@@ -1,6 +1,7 @@
 #ifndef PUSH_SWAP_H
 # define PUSH_SWAP_H
 # include "push_swap_shared.h"
+# define SEL_SORT_CUTOFF 25
 
 typedef enum e_action {
 	SA,
@@ -30,8 +31,7 @@ typedef struct s_a_info {
 
 typedef enum e_stack_name {
 	A,
-	B,
-	END_SN
+	B
 }	t_stack_name;
 
 typedef enum e_cmp {
@@ -68,10 +68,13 @@ void	error(void);
 void	run_action(t_action action, t_stack *a, t_stack *b, t_ins_lst *list);
 
 void	ps_quicksort(t_stack *a, t_ins_lst *action_list);
+int32_t	calculate_needed_partitions(uint32_t values);
 int32_t	find_median(t_stack *stack, int32_t count);
 
-bool	selection_sort(t_stack *s[2], t_ins_lst *list, int32_t count, t_cmp cmp);
+bool	selection_sort(t_stack *s[2], t_ins_lst *list, int32_t count);
 
+int32_t	get_partition(t_stack *stack);
+void	partition(t_stack *stack);
 int32_t	partition_size(t_stack *stack);
 
 void	do_push(t_stack_name from, t_stack *a, t_stack *b, t_ins_lst *list);

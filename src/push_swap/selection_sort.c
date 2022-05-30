@@ -103,7 +103,7 @@ static t_cost	find_cheapest(t_stack *stack, int32_t limits[2][2])
  * of how many rotations we've done, and use that info to know where the
  * partition starts and ends.
  */
-bool	selection_sort(t_stack *s[2], t_ins_lst *list, int32_t count, t_cmp cmp)
+bool	selection_sort(t_stack *s[2], t_ins_lst *list, int32_t count)
 {
 	int32_t			limits[2][2];
 	int32_t			rotation;
@@ -120,9 +120,9 @@ bool	selection_sort(t_stack *s[2], t_ins_lst *list, int32_t count, t_cmp cmp)
 			do_rotate(A, s[A], false, list);
 		rotation += plan.count;
 	}
-	while (!compare(s[A]->arr[0], get_top(s[A]), cmp))
+	while (s[A]->arr[0] < get_top(s[A]))
 		do_rotate(A, s[A], true, list);
 	if (s[B]->p_idx != -1)
 		--s[B]->p_idx;
-	return (false);
+	return (true);
 }

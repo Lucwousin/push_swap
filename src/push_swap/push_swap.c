@@ -71,7 +71,7 @@ int	main(int argc, char **argv)
 	if (argc <= 2)
 		exit(EXIT_SUCCESS);
 	ft_bzero(&action_list, sizeof(t_ins_lst));
-	stack = create_stack(argc - 1);
+	stack = create_stack(argc - 1, 1);
 	if (stack == NULL)
 		exit(EXIT_FAILURE);
 	if (!parse_args(stack, argv + 1) || !index_stack(stack))

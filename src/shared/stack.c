@@ -13,11 +13,10 @@
 #include "push_swap_shared.h"
 #include "libft.h"
 
-t_stack	*create_stack(uint32_t size)
+t_stack	*create_stack(uint32_t size, int32_t p_count)
 {
 	t_stack	*stack;
-//	int32_t	p_count;
-	
+
 	stack = ft_calloc(1, sizeof(t_stack));
 	if (stack == NULL)
 		return (NULL);
@@ -29,8 +28,7 @@ t_stack	*create_stack(uint32_t size)
 		free(stack);
 		return (NULL);
 	}
-//	p_count = ft_max(1, (int32_t) size / 5);
-	stack->partitions = malloc(size * sizeof(int32_t));
+	stack->partitions = malloc(p_count * sizeof(int32_t));
 	if (stack->partitions == NULL)
 	{
 		delete_stack(stack);
@@ -71,7 +69,7 @@ bool	index_stack(t_stack *stack)
 bool	is_sorted(t_stack *stack)
 {
 	uint32_t	i;
-	
+
 	i = stack->top;
 	while (i > 0)
 	{
@@ -80,16 +78,4 @@ bool	is_sorted(t_stack *stack)
 		--i;
 	}
 	return (true);
-}
-
-int32_t	get_partition(t_stack *stack)
-{
-	if (stack->p_idx == -1)
-		return (-1);
-	return (stack->partitions[stack->p_idx]);
-}
-
-void	partition(t_stack *stack, int32_t i)
-{
-	stack->partitions[++stack->p_idx] = i;
 }

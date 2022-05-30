@@ -3,10 +3,10 @@
 /*                                                        ::::::::            */
 /*   utils.c                                            :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: lucas <lucas@student.codam.nl>               +#+                     */
+/*   By: lsinke <lsinke@student.codam.nl>             +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2022/05/28 20:43:08 by lucas         #+#    #+#                 */
-/*   Updated: 2022/05/28 20:43:08 by lucas         ########   odam.nl         */
+/*   Created: 2022/05/28 20:43:08 by lsinke        #+#    #+#                 */
+/*   Updated: 2022/05/28 20:43:08 by lsinke        ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,19 +70,4 @@ void	do_rotate_n(
 		else if (amt < 0)
 			amt++;
 	}
-}
-
-/**
- * Get the size of the top partition of stack.
- * If the stack has no partitions yet, return the size of the stack.
- */
-int32_t	partition_size(t_stack *stack)
-{
-	int32_t	partition;
-
-	partition = get_partition(stack);
-	if (partition == -1)
-		return (stack->top + 1);
-	else
-		return (stack->top + 1 - (partition + 1));
 }
