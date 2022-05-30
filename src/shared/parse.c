@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   parse.c                                            :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lsinke <lsinke@student.codam.nl>             +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2022/05/30 16:30:13 by lsinke        #+#    #+#                 */
+/*   Updated: 2022/05/30 16:30:13 by lsinke        ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "push_swap_shared.h"
 #include "libft.h"
 
@@ -18,7 +30,7 @@ static bool	read_number(char *arg, int32_t *n)
 		number *= 10;
 		number += *arg - '0';
 		++arg;
-		if ((number > (int64_t) INT32_MAX + 1) ||
+		if ((number > (int64_t) INT32_MAX + 1) || \
 			(number > INT32_MAX && sign == 1))
 			return (false);
 	}
@@ -33,7 +45,7 @@ static bool	contains_no_duplicates(const int32_t *arr, uint32_t size)
 {
 	uint32_t	i;
 	uint32_t	j;
-	
+
 	i = 0;
 	while (i < size - 1)
 	{

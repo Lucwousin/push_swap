@@ -1,9 +1,16 @@
-#include "push_swap_shared.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   stack_actions.c                                    :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lsinke <lsinke@student.codam.nl>             +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2022/05/30 16:17:01 by lsinke        #+#    #+#                 */
+/*   Updated: 2022/05/30 16:17:01 by lsinke        ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
 
-int32_t	get_i(t_stack *stack, int32_t i)
-{
-	return (stack->arr[i]);
-}
+#include "push_swap_shared.h"
 
 int32_t	get_top(t_stack *stack)
 {
@@ -33,7 +40,7 @@ void	rotate(t_stack *stack)
 	int32_t	val;
 	int32_t	tmp;
 	int32_t	i;
-	
+
 	if (stack->top <= 0)
 		return ;
 	i = 0;
