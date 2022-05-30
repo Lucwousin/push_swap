@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   action.c                                           :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lsinke <lsinke@student.codam.nl>             +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2022/05/30 16:13:30 by lsinke        #+#    #+#                 */
+/*   Updated: 2022/05/30 16:13:30 by lsinke        ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <stdlib.h>
 #include <unistd.h>
 #include "push_swap.h"
@@ -5,17 +17,17 @@
 #include "ft_printf.h"
 
 static const t_a_info	g_actions[] = {
-		[SA] = {"sa", SWAP},
-		[SB] = {"sb", SWAP},
-		[SS] = {"ss", SWAP},
-		[PA] = {"pa", PUSH},
-		[PB] = {"pb", PUSH},
-		[RA] = {"ra", ROTATE},
-		[RB] = {"rb", ROTATE},
-		[RR] = {"rr", ROTATE},
-		[RRA] = {"rra", ROTATE},
-		[RRB] = {"rrb", ROTATE},
-		[RRR] = {"rrr", ROTATE},
+[SA] = {"sa", SWAP},
+[SB] = {"sb", SWAP},
+[SS] = {"ss", SWAP},
+[PA] = {"pa", PUSH},
+[PB] = {"pb", PUSH},
+[RA] = {"ra", ROTATE},
+[RB] = {"rb", ROTATE},
+[RR] = {"rr", ROTATE},
+[RRA] = {"rra", ROTATE},
+[RRB] = {"rrb", ROTATE},
+[RRR] = {"rrr", ROTATE},
 };
 
 t_a_info	get_info(t_action action)
@@ -26,7 +38,7 @@ t_a_info	get_info(t_action action)
 bool	add_action(t_ins_lst *list, t_action action)
 {
 	t_ins_lst	*lst_obj;
-	
+
 	lst_obj = malloc(sizeof(t_ins_lst));
 	if (!lst_obj)
 		return (false);
