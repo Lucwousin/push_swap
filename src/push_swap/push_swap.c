@@ -14,12 +14,6 @@
 #include "libft.h"
 #include "push_swap.h"
 
-void	error(void)
-{
-	ft_putendl_fd("Error", STDERR_FILENO);
-	exit(EXIT_FAILURE);
-}
-
 static void	sort_three(t_stack *a, t_ins_lst *list)
 {
 	if (a->arr[a->top] == 0)
@@ -68,7 +62,7 @@ int	main(int argc, char **argv)
 	t_stack		*stack;
 	t_ins_lst	action_list;
 
-	if (argc <= 2)
+	if (argc == 1)
 		exit(EXIT_SUCCESS);
 	ft_bzero(&action_list, sizeof(t_ins_lst));
 	stack = create_stack(argc - 1, 1);

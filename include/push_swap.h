@@ -15,21 +15,6 @@
 # include "push_swap_shared.h"
 # define SEL_SORT_CUTOFF 25
 
-typedef enum e_action {
-	SA,
-	SB,
-	SS,
-	PA,
-	PB,
-	RA,
-	RB,
-	RR,
-	RRA,
-	RRB,
-	RRR,
-	NO_ACTION
-}	t_action;
-
 typedef enum e_action_type {
 	SWAP,
 	ROTATE,
@@ -40,11 +25,6 @@ typedef struct s_a_info {
 	const char	*str;
 	t_a_type	type;
 }	t_a_info;
-
-typedef enum e_stack_name {
-	A,
-	B
-}	t_s_id;
 
 typedef enum e_cmp {
 	LE,
@@ -74,11 +54,6 @@ typedef struct s_split_info {
 	int32_t	median;
 	int32_t	rotated;
 }	t_splinf;
-
-/*
- * The most important function of all
- */
-void		error(void);
 
 /*
  * Quicksort

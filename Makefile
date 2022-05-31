@@ -11,48 +11,56 @@
 # **************************************************************************** #
 
 NAME = push_swap
+C_NAME = checker
 
 OBJ_DIR = obj/
 SRC_DIR = src/
 INC_DIR = include/
 
-PUSH_SWAP_SRC_DIR = push_swap/
-SHARED_SRC_DIR = shared/
-
-SRCS = action.c		median.c	push_swap.c		ps_quicksort.c		selection_sort.c		util/utils.c\
+PS_SRC_DIR = push_swap/
+PS_SRCS = action.c		median.c	push_swap.c		ps_quicksort.c		selection_sort.c		util/utils.c\
 	   optimizer/optimizer.c	optimizer/contradictions.c	optimizer/rotation.c\
 	   util/partition.c
-SRCS_P = $(addprefix $(PUSH_SWAP_SRC_DIR), $(SRCS))
-OBJS = $(SRCS_P:.c=.o)
-OBJS_P = $(addprefix $(OBJ_DIR), $(OBJS))
+PS_SRCS_P = $(addprefix $(PS_SRC_DIR), $(PS_SRCS))
+PS_OBJS = $(PS_SRCS_P:.c=.o)
+PS_OBJS_P = $(addprefix $(OBJ_DIR), $(PS_OBJS))
 
-SHARED_SRCS = parse.c\
-			  stack.c\
-			  stack_actions.c
+C_SRC_DIR = checker/
+C_SRCS = checker.c		ingest.c
+C_SRCS_P = $(addprefix $(C_SRC_DIR), $(C_SRCS))
+C_OBJS = $(C_SRCS_P:.c=.o)
+C_OBJS_P = $(addprefix $(OBJ_DIR), $(C_OBJS))
+
+SHARED_SRC_DIR = shared/
+SHARED_SRCS = error.c		parse.c		stack.c		stack_actions.c
 SHARED_SRCS_P = $(addprefix $(SHARED_SRC_DIR), $(SHARED_SRCS))
 SHARED_OBJS = $(SHARED_SRCS_P:.c=.o)
 SHARED_OBJS_P = $(addprefix $(OBJ_DIR), $(SHARED_OBJS))
 
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -g -fsanitize=address
+CFLAGS = -Wall -Werror -Wextra
 
 LIBFT = ./libft/
 LIBFT_LIB = $(addprefix $(LIBFT), libft.a)
 LIBFT_INC = -I ./libft/include
 
-all: $(NAME)
+all: $(NAME) $(C_NAME)
 
 $(LIBFT_LIB):
 	@make -C $(LIBFT)
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c $(LIBFT)include/libft.h $(INC_DIR)push_swap.h $(INC_DIR)push_swap_shared.h
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c $(LIBFT)include/libft.h $(INC_DIR)push_swap.h $(INC_DIR)push_swap_shared.h $(INC_DIR)checker.h
 	@mkdir -p $(@D)
 	@echo "Compiling: $<"
 	@$(CC) $(CFLAGS) -I $(INC_DIR) $(LIBFT_INC) -c -o $@ $<
 
-$(NAME): $(LIBFT_LIB) $(OBJS_P) $(SHARED_OBJS_P)
+$(NAME): $(LIBFT_LIB) $(PS_OBJS_P) $(SHARED_OBJS_P)
 	@echo "Compiling main executable"
-	@$(CC) $(CFLAGS) $(OBJS_P) $(SHARED_OBJS_P) $(LIBFT_LIB) -o $(NAME)
+	@$(CC) $(CFLAGS) $(PS_OBJS_P) $(SHARED_OBJS_P) $(LIBFT_LIB) -o $(NAME)
+
+$(C_NAME): $(LIBFT_LIB) $(C_OBJS_P) $(SHARED_OBJS_P)
+	@echo "Compiling checker"
+	@$(CC) $(CFLAGS) $(C_OBJS_P) $(SHARED_OBJS_P) $(LIBFT_LIB) -o $(C_NAME)
 
 clean:
 	@rm -rf $(OBJ_DIR)
@@ -61,10 +69,13 @@ clean:
 
 fclean: clean
 	@rm -f $(NAME)
+	@rm -f $(C_NAME)
 	@echo "Done cleaning archive $(CURDIR)/$(NAME)"
 	@$(MAKE) -C $(LIBFT) fclean
 
 re: fclean
 	@$(MAKE)
 
-.PHONY: all clean fclean re
+bonus: $(C_NAME)
+
+.PHONY: all clean fclean re bonus

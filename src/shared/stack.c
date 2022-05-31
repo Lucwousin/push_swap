@@ -40,6 +40,8 @@ t_stack	*create_stack(uint32_t size, int32_t p_count)
 
 void	delete_stack(t_stack *stack)
 {
+	if (stack == NULL)
+		return ;
 	free(stack->arr);
 	free(stack->partitions);
 	free(stack);

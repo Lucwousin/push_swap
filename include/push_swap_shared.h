@@ -24,6 +24,34 @@ typedef struct s_stack
 	int32_t		p_idx;
 }	t_stack;
 
+typedef enum e_action {
+	SA,
+	SB,
+	SS,
+	PA,
+	PB,
+	RA,
+	RB,
+	RR,
+	RRA,
+	RRB,
+	RRR,
+	NO_ACTION
+}	t_action;
+
+typedef enum e_stack_name {
+	A,
+	B
+}	t_s_id;
+
+/*
+ * The most important function of all
+ */
+void	error(void);
+
+/*
+ * Parsing
+ */
 bool	parse_args(t_stack *stack, char **argv);
 
 /*
