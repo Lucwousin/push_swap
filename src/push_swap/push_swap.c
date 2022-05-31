@@ -20,7 +20,7 @@ void	error(void)
 	exit(EXIT_FAILURE);
 }
 
-void	sort_three(t_stack *a, t_ins_lst *list)
+static void	sort_three(t_stack *a, t_ins_lst *list)
 {
 	if (a->arr[a->top] == 0)
 	{
@@ -40,7 +40,7 @@ void	sort_three(t_stack *a, t_ins_lst *list)
 	}
 }
 
-void	sort(t_stack *a, t_ins_lst *list)
+static void	sort(t_stack *a, t_ins_lst *list)
 {
 	if (is_sorted(a))
 		return ;

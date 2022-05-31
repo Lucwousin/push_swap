@@ -32,7 +32,7 @@ typedef struct s_a_info {
 typedef enum e_stack_name {
 	A,
 	B
-}	t_stack_name;
+}	t_s_name;
 
 typedef enum e_cmp {
 	LE,
@@ -67,7 +67,7 @@ void	error(void);
 
 void	run_action(t_action action, t_stack *a, t_stack *b, t_ins_lst *list);
 
-void	ps_quicksort(t_stack *a, t_ins_lst *action_list);
+void	ps_quicksort(t_stack *a, t_ins_lst *list);
 int32_t	calculate_needed_partitions(uint32_t values);
 int32_t	find_median(t_stack *stack, int32_t count);
 
@@ -77,9 +77,9 @@ int32_t	get_partition(t_stack *stack);
 void	partition(t_stack *stack);
 int32_t	partition_size(t_stack *stack);
 
-void	do_push(t_stack_name from, t_stack *a, t_stack *b, t_ins_lst *list);
-void	do_rotate(t_stack_name name, t_stack *stack, bool rev, t_ins_lst *list);
-void	do_rotate_n(t_stack_name n, t_stack *stack, int32_t amt, t_ins_lst *list);
+void	do_push(t_s_name from, t_stack *s[2], t_ins_lst *list);
+void	do_rotate(t_s_name name, t_stack *s[2], bool rev, t_ins_lst *list);
+void	do_rotate_n(t_s_name n, t_stack *s[2], int32_t amt, t_ins_lst *list);
 
 bool	add_action(t_ins_lst *list, t_action action);
 void	print_list(t_ins_lst *list);

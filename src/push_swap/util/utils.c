@@ -27,11 +27,11 @@ bool	compare(int32_t a, int32_t b, t_cmp cmp)
 /**
  * Push from stack to other stack
  */
-void	do_push(t_stack_name from, t_stack *a, t_stack *b, t_ins_lst *list)
+void	do_push(t_s_name from, t_stack *s[2], t_ins_lst *list)
 {
 	static const t_action	pushes[2] = {[A] = PB, [B] = PA};
 
-	run_action(pushes[from], a, b, list);
+	run_action(pushes[from], s[A], s[B], list);
 }
 
 /**
@@ -40,31 +40,27 @@ void	do_push(t_stack_name from, t_stack *a, t_stack *b, t_ins_lst *list)
  * Because norminette only allows 4 params to a function we give the stack as
  * both params for run_action. Make sure you give the correct stack as param!
  */
-void	do_rotate(t_stack_name name, t_stack *stack, bool rev, t_ins_lst *list)
+void	do_rotate(t_s_name name, t_stack *s[2], bool rev, t_ins_lst *list)
 {
 	static const t_action	rotates[2][2] = {
 	[false] = {[A] = RA, [B] = RB},
 	[true] = {[A] = RRA, [B] = RRB}
 	};
 
-	run_action(rotates[rev][name], stack, stack, list);
+	run_action(rotates[rev][name], s[A], s[B], list);
 }
 
 /**
  * Rotate stack n amt of times. If amt is negative, rotate reversed
  */
-void	do_rotate_n(
-	t_stack_name n,
-	t_stack *stack,
-	int32_t amt,
-	t_ins_lst *list)
+void	do_rotate_n(t_s_name n, t_stack *s[2], int32_t amt, t_ins_lst *list)
 {
 	bool	neg;
 
 	neg = amt < 0;
 	while (amt)
 	{
-		do_rotate(n, stack, neg, list);
+		do_rotate(n, s, neg, list);
 		if (amt > 0)
 			amt--;
 		else if (amt < 0)

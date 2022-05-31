@@ -114,14 +114,14 @@ bool	selection_sort(t_stack *s[2], t_ins_lst *list, int32_t count)
 	{
 		find_minmax(s[B], limits, count, rotation);
 		plan = find_cheapest(s[B], limits);
-		do_rotate_n(B, s[B], plan.count, list);
-		do_push(B, s[A], s[B], list);
+		do_rotate_n(B, s, plan.count, list);
+		do_push(B, s, list);
 		if (plan.smaller)
-			do_rotate(A, s[A], false, list);
+			do_rotate(A, s, false, list);
 		rotation += plan.count;
 	}
 	while (s[A]->arr[0] < get_top(s[A]))
-		do_rotate(A, s[A], true, list);
+		do_rotate(A, s, true, list);
 	if (s[B]->p_idx != -1)
 		--s[B]->p_idx;
 	return (true);

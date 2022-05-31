@@ -20,24 +20,24 @@
  * could not handle my beautiful code. (No, it's a bug)
  * https://github.com/42School/norminette/issues/319
  */
-static void	do_swap(t_stack *a, t_stack *b, t_stack_name n, t_ins_lst *list)
+static void	do_swap(t_s_name n, t_stack *s[2], t_ins_lst *list)
 {
 	bool	swap[2];
 
 	swap[A] = false;
 	swap[B] = false;
-	if (a->top > 0)
-		swap[A] = a->arr[a->top] > a->arr[a->top - 1];
-	if (b->top > 0)
-		swap[B] = b->arr[b->top] < b->arr[b->top - 1];
+	if (s[A]->top > 0)
+		swap[A] = s[A]->arr[s[A]->top] > s[A]->arr[s[A]->top - 1];
+	if (s[B]->top > 0)
+		swap[B] = s[B]->arr[s[B]->top] < s[B]->arr[s[B]->top - 1];
 	if (!swap[n])
 		return ;
 	if (swap[A] && swap[B])
-		run_action(SS, a, b, list);
+		run_action(SS, s[A], s[B], list);
 	else if (swap[A])
-		run_action(SA, a, b, list);
+		run_action(SA, s[A], s[B], list);
 	else if (swap[B])
-		run_action(SB, a, b, list);
+		run_action(SB, s[A], s[B], list);
 }
 
 /**
@@ -49,21 +49,21 @@ static void	do_swap(t_stack *a, t_stack *b, t_stack_name n, t_ins_lst *list)
  * reversed.
  */
 static void	rewind(
-		t_stack_name n,
-		t_stack *stack,
+		t_s_name n,
+		t_stack *s[2],
 		int32_t rotated,
 		t_ins_lst *list)
 {
 	int32_t	count;
 	bool	reversed;
 
-	reversed = rotated < get_partition(stack);
+	reversed = rotated < get_partition(s[n]);
 	if (!reversed)
-		count = get_partition(stack) + 1;
+		count = get_partition(s[n]) + 1;
 	else
 		count = rotated;
 	while (count--)
-		do_rotate(n, stack, reversed, list);
+		do_rotate(n, s, reversed, list);
 }
 
 /**
@@ -75,13 +75,13 @@ static void	rewind(
  * I know those indentations for the if/else are wrong, but norminette
  * disagrees with that.
  */
-static bool	split(t_stack_name n, t_stack **s, t_ins_lst *list, t_cmp cmp)
+static bool	split(t_s_name n, t_stack **s, t_ins_lst *list, t_cmp cmp)
 {
 	t_splinf	info;
 
 	info.count = partition_size(s[n]);
 	if (info.count == 2)
-		do_swap(s[A], s[B], n, list);
+		do_swap(n, s, list);
 	if (info.count <= 2 && n == A)
 		return (false);
 	if (n == A && s[B]->top >= 0)
@@ -92,14 +92,14 @@ static bool	split(t_stack_name n, t_stack **s, t_ins_lst *list, t_cmp cmp)
 	info.rotated = 0;
 	while (info.count--)
 		if (compare(get_top(s[n]), info.median, cmp))
-			do_push(n, s[A], s[B], list);
+			do_push(n, s, list);
 		else // TODO: Stop norminette complaining
 		{
-			do_rotate(n, s[n], false, list);
+			do_rotate(n, s, false, list);
 			++info.rotated;
 		}
 	if (s[n]->p_idx != -1)
-		rewind(n, s[n], info.rotated, list);
+		rewind(n, s, info.rotated, list);
 	return (true);
 }
 
@@ -143,8 +143,11 @@ void	ps_quicksort(t_stack *a, t_ins_lst *list)
 
 	s[A] = a;
 	s[B] = create_stack(a->size, calculate_needed_partitions(a->size));
-	if (!s[B]) // TODO: change
-		return ;
+	if (!s[B])
+	{
+		delete_stack(a);
+		error();
+	}
 	while (true)
 	{
 		update_sorted_partition(s[A]);
