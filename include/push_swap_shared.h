@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   push_swap_shared.h                                 :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lsinke <lsinke@student.codam.nl>             +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2022/05/31 13:17:11 by lsinke        #+#    #+#                 */
+/*   Updated: 2022/05/31 13:17:11 by lsinke        ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PUSH_SWAP_SHARED_H
 # define PUSH_SWAP_SHARED_H
 # include <stdint.h>
@@ -12,18 +24,27 @@ typedef struct s_stack
 	int32_t		p_idx;
 }	t_stack;
 
+bool	parse_args(t_stack *stack, char **argv);
+
+/*
+ * Stack creation
+ */
 t_stack	*create_stack(uint32_t size, int32_t p_count);
 void	delete_stack(t_stack *stack);
 bool	index_stack(t_stack *stack);
-bool	is_sorted(t_stack *stack);
 
-bool	parse_args(t_stack *stack, char **argv);
-
+/*
+ * Stack actions
+ */
 void	swap(t_stack *stack);
 void	push(t_stack *from, t_stack *to);
 void	rotate(t_stack *stack);
 void	rotate_rev(t_stack *stack);
 
+/*
+ * Stack utils
+ */
+bool	is_sorted(t_stack *stack);
 int32_t	get_top(t_stack *stack);
 
 #endif

@@ -20,7 +20,7 @@
  * could not handle my beautiful code. (No, it's a bug)
  * https://github.com/42School/norminette/issues/319
  */
-static void	do_swap(t_s_name n, t_stack *s[2], t_ins_lst *list)
+static void	do_swap(t_s_id n, t_stack *s[2], t_ins_lst *list)
 {
 	bool	swap[2];
 
@@ -49,7 +49,7 @@ static void	do_swap(t_s_name n, t_stack *s[2], t_ins_lst *list)
  * reversed.
  */
 static void	rewind(
-		t_s_name n,
+		t_s_id n,
 		t_stack *s[2],
 		int32_t rotated,
 		t_ins_lst *list)
@@ -75,7 +75,7 @@ static void	rewind(
  * I know those indentations for the if/else are wrong, but norminette
  * disagrees with that.
  */
-static bool	split(t_s_name n, t_stack **s, t_ins_lst *list, t_cmp cmp)
+static bool	split(t_s_id n, t_stack **s, t_ins_lst *list, t_cmp cmp)
 {
 	t_splinf	info;
 

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   push_swap.h                                        :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lsinke <lsinke@student.codam.nl>             +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2022/05/31 13:17:19 by lsinke        #+#    #+#                 */
+/*   Updated: 2022/05/31 13:17:19 by lsinke        ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PUSH_SWAP_H
 # define PUSH_SWAP_H
 # include "push_swap_shared.h"
@@ -32,7 +44,7 @@ typedef struct s_a_info {
 typedef enum e_stack_name {
 	A,
 	B
-}	t_s_name;
+}	t_s_id;
 
 typedef enum e_cmp {
 	LE,
@@ -48,7 +60,7 @@ typedef struct s_action_list	t_ins_lst;
 
 struct s_action_list
 {
-	t_action		action;
+	t_action	action;
 	t_ins_lst	*next;
 	t_ins_lst	*prev;
 };
@@ -63,33 +75,50 @@ typedef struct s_split_info {
 	int32_t	rotated;
 }	t_splinf;
 
-void	error(void);
+/*
+ * The most important function of all
+ */
+void		error(void);
 
-void	run_action(t_action action, t_stack *a, t_stack *b, t_ins_lst *list);
+/*
+ * Quicksort
+ */
+void		ps_quicksort(t_stack *a, t_ins_lst *list);
+int32_t		calculate_needed_partitions(uint32_t values);
+int32_t		find_median(t_stack *stack, int32_t count);
 
-void	ps_quicksort(t_stack *a, t_ins_lst *list);
-int32_t	calculate_needed_partitions(uint32_t values);
-int32_t	find_median(t_stack *stack, int32_t count);
+bool		selection_sort(t_stack *s[2], t_ins_lst *list, int32_t count);
 
-bool	selection_sort(t_stack *s[2], t_ins_lst *list, int32_t count);
-
-int32_t	get_partition(t_stack *stack);
-void	partition(t_stack *stack);
-int32_t	partition_size(t_stack *stack);
-
-void	do_push(t_s_name from, t_stack *s[2], t_ins_lst *list);
-void	do_rotate(t_s_name name, t_stack *s[2], bool rev, t_ins_lst *list);
-void	do_rotate_n(t_s_name n, t_stack *s[2], int32_t amt, t_ins_lst *list);
-
-bool	add_action(t_ins_lst *list, t_action action);
-void	print_list(t_ins_lst *list);
-void	clear(t_ins_lst *list);
+/*
+ * Action list stuff
+ */
+void		run_action(
+				t_action action, t_stack *a, t_stack *b, t_ins_lst *list);
+bool		add_action(t_ins_lst *list, t_action action);
+void		print_list(t_ins_lst *list);
+void		clear(t_ins_lst *list);
 t_a_info	get_info(t_action action);
 
-void	optimize(t_ins_lst *list);
+/*
+ * Action list optimization
+ */
+void		optimize(t_ins_lst *list);
 t_ins_lst	*clean_rotation(t_ins_lst *list, t_ins_lst *cur);
 t_ins_lst	*combine_contradictions(t_ins_lst *list, t_ins_lst *cur);
 
-bool	compare(int32_t a, int32_t b, t_cmp cmp);
+/*
+ * Ways to run actions on a certain stack, from stack name
+ */
+void		do_push(t_s_id from, t_stack *s[2], t_ins_lst *list);
+void		do_rotate(t_s_id n, t_stack *s[2], bool rev, t_ins_lst *list);
+void		do_rotate_n(t_s_id n, t_stack *s[2], int32_t amt, t_ins_lst *list);
+
+/*
+ * Utils
+ */
+int32_t		get_partition(t_stack *stack);
+void		partition(t_stack *stack);
+int32_t		partition_size(t_stack *stack);
+bool		compare(int32_t a, int32_t b, t_cmp cmp);
 
 #endif
