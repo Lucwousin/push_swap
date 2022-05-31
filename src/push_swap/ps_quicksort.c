@@ -93,11 +93,11 @@ static bool	split(t_s_name n, t_stack **s, t_ins_lst *list, t_cmp cmp)
 	while (info.count--)
 		if (compare(get_top(s[n]), info.median, cmp))
 			do_push(n, s, list);
-		else // TODO: Stop norminette complaining
-		{
-			do_rotate(n, s, false, list);
-			++info.rotated;
-		}
+	else
+	{
+		do_rotate(n, s, false, list);
+		++info.rotated;
+	}
 	if (s[n]->p_idx != -1)
 		rewind(n, s, info.rotated, list);
 	return (true);
