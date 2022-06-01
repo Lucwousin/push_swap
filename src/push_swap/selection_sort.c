@@ -85,7 +85,7 @@ static t_cost	find_cheapest(t_stack *stack, int32_t limits[2][2])
 		costs[1].count = -(limits[1][1] + 1);
 	else
 		costs[1].count = stack->top - limits[1][1];
-	if (abs(costs[0].count) + 2 < abs(costs[1].count) + 1)
+	if (abs(costs[0].count) + 1 < abs(costs[1].count))
 		return (costs[0]);
 	else
 		return (costs[1]);
