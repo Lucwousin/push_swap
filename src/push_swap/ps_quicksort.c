@@ -13,34 +13,6 @@
 #include "push_swap.h"
 
 /**
- * Check if the top 2 values of stack n should be swapped.
- * If yes, check if swapping other stack's values also improves performance
- *
- * The swap[n] assignments are spread out over multiple lines because the norm
- * could not handle my beautiful code. (No, it's a bug)
- * https://github.com/42School/norminette/issues/319
- */
-static void	do_swap(t_s_id n, t_stack *s[2], t_ins_lst *list)
-{
-	bool	swap[2];
-
-	swap[A] = false;
-	swap[B] = false;
-	if (s[A]->top > 0)
-		swap[A] = s[A]->arr[s[A]->top] > s[A]->arr[s[A]->top - 1];
-	if (s[B]->top > 0)
-		swap[B] = s[B]->arr[s[B]->top] < s[B]->arr[s[B]->top - 1];
-	if (!swap[n])
-		return ;
-	if (swap[A] && swap[B])
-		run_action(SS, s[A], s[B], list);
-	else if (swap[A])
-		run_action(SA, s[A], s[B], list);
-	else if (swap[B])
-		run_action(SB, s[A], s[B], list);
-}
-
-/**
  * After splitting from one stack to another, all the values we did not push
  * will be on the bottom of the stack. If we had partitions in the stack we
  * don't want those to now be on top, so we have to rotate the stack enough
@@ -125,6 +97,35 @@ static void	update_sorted_partition(t_stack *s)
 	s->p_idx = 0;
 }
 
+static void	tri_split(t_stack *s[2], t_ins_lst *list)
+{
+	int32_t	medians[2];
+	int32_t	count;
+	int32_t	value;
+	int32_t	bot_part_b;
+
+	count = (int32_t) s[A]->top + 1;
+	medians[0] = count / 3;
+	medians[1] = count * 2 / 3;
+	bot_part_b = -1;
+	while (count--)
+	{
+		value = get_top(s[A]);
+		if (value > medians[1])
+		{
+			run_action(RA, s[A], s[B], list);
+			continue ;
+		}
+		run_action(PB, s[A], s[B], list);
+		if (value <= medians[0])
+		{
+			run_action(RB, s[A], s[B], list);
+			++bot_part_b;
+		}
+	}
+	s[B]->partitions[++s[B]->p_idx] = bot_part_b;
+}
+
 /**
  * Iterative quicksort
  *
@@ -148,6 +149,8 @@ void	ps_quicksort(t_stack *a, t_ins_lst *list)
 		delete_stack(a);
 		error();
 	}
+	if (s[A]->size >= TRI_SPLIT_CUTOFF)
+		tri_split(s, list);
 	while (true)
 	{
 		update_sorted_partition(s[A]);

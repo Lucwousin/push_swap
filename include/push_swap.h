@@ -14,6 +14,7 @@
 # define PUSH_SWAP_H
 # include "push_swap_shared.h"
 # define SEL_SORT_CUTOFF 25
+# define TRI_SPLIT_CUTOFF 20
 
 typedef enum e_action_type {
 	SWAP,
@@ -83,10 +84,13 @@ t_ins_lst	*combine_contradictions(t_ins_lst *list, t_ins_lst *cur);
 
 /*
  * Ways to run actions on a certain stack, from stack name
+ * 
+ * (do_swap checks if it's more efficient to swap both stacks)
  */
 void		do_push(t_s_id from, t_stack *s[2], t_ins_lst *list);
 void		do_rotate(t_s_id n, t_stack *s[2], bool rev, t_ins_lst *list);
 void		do_rotate_n(t_s_id n, t_stack *s[2], int32_t amt, t_ins_lst *list);
+void		do_swap(t_s_id n, t_stack *s[2], t_ins_lst *list);
 
 /*
  * Utils
