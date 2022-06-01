@@ -11,10 +11,7 @@
 /* ************************************************************************** */
 
 #include <stdlib.h>
-#include <unistd.h>
 #include "push_swap.h"
-#include "libft.h"
-#include "ft_printf.h"
 
 static const t_a_info	g_actions[] = {
 [SA] = {"sa", SWAP},
