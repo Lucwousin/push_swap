@@ -45,7 +45,7 @@ static void	sort(t_stack *a, t_ins_lst *list)
 	return (ps_quicksort(a, list));
 }
 
-void	print_list(t_ins_lst *list)
+static void	print_list(t_ins_lst *list)
 {
 	t_ins_lst	*cur;
 
@@ -55,6 +55,14 @@ void	print_list(t_ins_lst *list)
 		ft_putendl_fd((char *) get_info(cur->action).str, STDOUT_FILENO);
 		cur = cur->next;
 	}
+}
+
+static void	cleanup_and_exit(t_stack *stack, bool err)
+{
+	delete_stack(stack);
+	if (err)
+		error();
+	exit(EXIT_SUCCESS);
 }
 
 int	main(int argc, char **argv)
@@ -67,17 +75,11 @@ int	main(int argc, char **argv)
 	ft_bzero(&action_list, sizeof(t_ins_lst));
 	stack = create_stack(argc - 1, 1);
 	if (stack == NULL || !parse_args(stack, argv + 1))
-	{
-		delete_stack(stack);
-		error();
-	}
+		cleanup_and_exit(stack, true);
 	if (argc == 2)
-		exit(EXIT_SUCCESS);
+		cleanup_and_exit(stack, false);
 	if (!index_stack(stack))
-	{
-		delete_stack(stack);
-		error();
-	}
+		cleanup_and_exit(stack, true);
 	sort(stack, &action_list);
 	optimize(&action_list);
 	print_list(&action_list);

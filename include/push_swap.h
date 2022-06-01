@@ -71,7 +71,6 @@ bool		selection_sort(t_stack *s[2], t_ins_lst *list, int32_t count);
 void		run_action(
 				t_action action, t_stack *a, t_stack *b, t_ins_lst *list);
 bool		add_action(t_ins_lst *list, t_action action);
-void		print_list(t_ins_lst *list);
 void		clear(t_ins_lst *list);
 t_a_info	get_info(t_action action);
 
