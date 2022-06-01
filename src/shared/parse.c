@@ -13,6 +13,14 @@
 #include "push_swap_shared.h"
 #include "libft.h"
 
+static bool	contains_digit(char *arg)
+{
+	while (*arg)
+		if (ft_isdigit(*arg++))
+			return (true);
+	return (false);
+}
+
 static bool	read_number(char *arg, int32_t *n)
 {
 	int8_t	sign;
@@ -65,7 +73,12 @@ bool	parse_args(t_stack *stack, char **argv)
 	stack->top = (int32_t) stack->size - 1;
 	i = stack->size;
 	while (i-- > 0)
-		if (!read_number(*(argv++), stack->arr + i))
+	{
+		if (!contains_digit(*argv))
 			return (false);
+		if (!read_number(*argv, stack->arr + i))
+			return (false);
+		++argv;
+	}
 	return (contains_no_duplicates(stack->arr, stack->size));
 }

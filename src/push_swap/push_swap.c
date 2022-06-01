@@ -50,7 +50,7 @@ void	print_list(t_ins_lst *list)
 	t_ins_lst	*cur;
 
 	cur = list->next;
-	while (cur != list)
+	while (cur && cur != list)
 	{
 		ft_putendl_fd((char *) get_info(cur->action).str, STDOUT_FILENO);
 		cur = cur->next;
@@ -66,9 +66,14 @@ int	main(int argc, char **argv)
 		exit(EXIT_SUCCESS);
 	ft_bzero(&action_list, sizeof(t_ins_lst));
 	stack = create_stack(argc - 1, 1);
-	if (stack == NULL)
-		exit(EXIT_FAILURE);
-	if (!parse_args(stack, argv + 1) || !index_stack(stack))
+	if (stack == NULL || !parse_args(stack, argv + 1))
+	{
+		delete_stack(stack);
+		error();
+	}
+	if (argc == 2)
+		exit(EXIT_SUCCESS);
+	if (!index_stack(stack))
 	{
 		delete_stack(stack);
 		error();
